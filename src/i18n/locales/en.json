@@ -265,7 +265,10 @@
     "backfillWarning": "Switched successfully, but failed to save changes back to the previous provider",
     "windowControlFailed": "Window control failed: {{error}}",
     "officialBlockedByProxy": "Cannot switch to official provider while local routing is active. Using routing with official APIs may cause account bans.",
-    "proxyOfficialWarning": "Current provider {{name}} is official. Consider switching to a third-party provider before using local routing."
+    "proxyOfficialWarning": "Current provider {{name}} is official. Consider switching to a third-party provider before using local routing.",
+    "permissionGranted": "Notification permission granted",
+    "permissionDenied": "Notification permission denied. Enable it manually in system settings.",
+    "permissionPrompted": "Failed to request notification permission: {{error}}"
   },
   "confirm": {
     "deleteProvider": "Delete Provider",
@@ -869,7 +872,24 @@
       "defaultCostMultiplierRequired": "Default multiplier is required",
       "defaultCostMultiplierInvalid": "Invalid multiplier format"
     },
-    "saveFailedGeneric": "Save failed, please try again"
+    "saveFailedGeneric": "Save failed, please try again",
+    "notifications": {
+      "title": "Notifications",
+      "enableNotifications": "Enable desktop notifications",
+      "enableNotificationsDescription": "Show quota alerts and reset reminders in the system notification center. Requires OS-level notification permission.",
+      "notifyOnThresholdReached": "Quota threshold alerts",
+      "notifyOnThresholdReachedDescription": "Notify when usage crosses 80% / 95% / 100% (once per threshold per day)",
+      "notifyOnResetApproaching": "Reset reminders",
+      "notifyOnResetApproachingDescription": "Send two reminders: 5 minutes before reset and at reset",
+      "notifyOnAutoSwitch": "Auto-switch notifications",
+      "notifyOnAutoSwitchDescription": "Notify when auto-failover switches providers due to quota exhaustion (only when auto-failover is enabled)",
+      "testButton": "Send test notification",
+      "testTitle": "CC Switch test notification",
+      "testBody": "If you see this, OS notifications are working correctly.",
+      "testSuccess": "Test notification sent",
+      "testFailed": "Failed to send: {{error}}",
+      "permissionWarning": "System notification permission not granted. Enable it in System Settings → Notifications → CC Switch."
+    }
   },
   "apps": {
     "claude": "Claude",

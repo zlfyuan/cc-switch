@@ -34,8 +34,21 @@ pub async fn get_subscription_quota(
         if let Err(e) = app.emit("usage-cache-updated", payload) {
             log::error!("emit usage-cache-updated (subscription) 失败: {e}");
         }
-        state.usage_cache.put_subscription(app_type, snapshot);
+        state.usage_cache.put_subscription(app_type, snapshot.clone());
         crate::tray::schedule_tray_refresh(&app);
+
+        // 配额阈值告警 + 重置提醒（仅 success=true 时才推送；其他快照无 tiers）
+        if snapshot.success {
+            let provider_id = format!("subscription:{}", app_type.as_str());
+            let provider_name = app_type.as_str().to_string();
+            crate::notification::check_and_notify_subscription(
+                &app,
+                &provider_id,
+                &provider_name,
+                &snapshot,
+            )
+            .await;
+        }
     }
     inner
 }

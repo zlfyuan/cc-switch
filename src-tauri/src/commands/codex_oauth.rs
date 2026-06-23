@@ -5,11 +5,13 @@
 //! 大部分认证命令通过通用 `auth_*` 命令（参见 `commands::auth`）暴露给前端，
 //! 此处定义 State wrapper 以及 Codex OAuth 专属的订阅额度和模型列表查询命令。
 
+use crate::app_config::AppType;
 use crate::proxy::providers::codex_oauth_auth::CodexOAuthManager;
 use crate::services::model_fetch::FetchedModel;
 use crate::services::subscription::{query_codex_quota, CredentialStatus, SubscriptionQuota};
+use crate::store::AppState;
 use std::sync::Arc;
-use tauri::State;
+use tauri::{Emitter, State};
 use tokio::sync::RwLock;
 
 /// Codex OAuth 认证状态
@@ -23,8 +25,10 @@ pub struct CodexOAuthState(pub Arc<RwLock<CodexOAuthManager>>);
 ///   与 Codex CLI 路径完全一致
 #[tauri::command(rename_all = "camelCase")]
 pub async fn get_codex_oauth_quota(
+    app: tauri::AppHandle,
     account_id: Option<String>,
     state: State<'_, CodexOAuthState>,
+    app_state: State<'_, AppState>,
 ) -> Result<SubscriptionQuota, String> {
     let manager = state.0.read().await;
 
@@ -49,13 +53,40 @@ pub async fn get_codex_oauth_quota(
         }
     };
 
-    Ok(query_codex_quota(
+    let quota = query_codex_quota(
         &token,
         Some(&id),
         "codex_oauth",
         "Codex OAuth access token expired or rejected. Please re-login via cc-switch.",
     )
-    .await)
+    .await;
+
+    // 与 subscription.rs 对齐：写 usage_cache + emit `usage-cache-updated` + 通知调度
+    let app_type = AppType::Codex;
+    let payload = serde_json::json!({
+        "kind": "subscription",
+        "appType": app_type.as_str(),
+        "data": &quota,
+    });
+    if let Err(e) = app.emit("usage-cache-updated", payload) {
+        log::error!("emit usage-cache-updated (codex_oauth) 失败: {e}");
+    }
+    app_state.usage_cache.put_subscription(app_type, quota.clone());
+    crate::tray::schedule_tray_refresh(&app);
+
+    if quota.success {
+        let provider_id = format!("codex_oauth:{}", id);
+        let provider_name = format!("Codex OAuth ({})", id);
+        crate::notification::check_and_notify_subscription(
+            &app,
+            &provider_id,
+            &provider_name,
+            &quota,
+        )
+        .await;
+    }
+
+    Ok(quota)
 }
 
 /// 获取 Codex OAuth (ChatGPT Plus/Pro) 可用模型列表

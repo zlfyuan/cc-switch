@@ -511,7 +511,7 @@ const UsageScriptModal: React.FC<UsageScriptModalProps> = ({
         const baseUrl = providerCredentials.baseUrl ?? "";
         const apiKey = providerCredentials.apiKey ?? "";
         const { subscriptionApi } = await import("@/lib/api/subscription");
-        const result = await subscriptionApi.getBalance(baseUrl, apiKey);
+        const result = await subscriptionApi.getBalance(baseUrl, apiKey, provider.id, provider.name);
         if (result.success && result.data && result.data.length > 0) {
           const summary = result.data
             .map((d) =>
@@ -554,6 +554,8 @@ const UsageScriptModal: React.FC<UsageScriptModalProps> = ({
           apiKey,
           isVolcengine ? script.accessKeyId : undefined,
           isVolcengine ? script.secretAccessKey : undefined,
+          provider.id,
+          provider.name,
         );
         if (quota.success && quota.tiers.length > 0) {
           const summary = quota.tiers

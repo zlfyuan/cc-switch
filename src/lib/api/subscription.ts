@@ -12,16 +12,22 @@ export const subscriptionApi = {
     // 火山方舟用账号 AK/SK 签名查询用量；其他供应商不传。
     accessKeyId?: string,
     secretAccessKey?: string,
+    providerId?: string,
+    providerName?: string,
   ): Promise<SubscriptionQuota> =>
     invoke("get_coding_plan_quota", {
       baseUrl,
       apiKey,
       accessKeyId,
       secretAccessKey,
+      providerId,
+      providerName,
     }),
   getBalance: (
     baseUrl: string,
     apiKey: string,
+    providerId?: string,
+    providerName?: string,
   ): Promise<import("@/types").UsageResult> =>
-    invoke("get_balance", { baseUrl, apiKey }),
+    invoke("get_balance", { baseUrl, apiKey, providerId, providerName }),
 };

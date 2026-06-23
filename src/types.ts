@@ -427,6 +427,16 @@ export interface Settings {
       migratedStateRows?: number;
     };
   };
+
+  // ===== 通知设置 =====
+  // 是否启用 OS 级桌面通知（Notification Center / Action Center / libnotify）
+  enableNotifications?: boolean;
+  // 配额使用率跨过 80/95/100 阈值时推送通知
+  notifyOnThresholdReached?: boolean;
+  // 配额重置前 5 分钟 + 整点各推一条提醒
+  notifyOnResetApproaching?: boolean;
+  // 自动故障转移切换供应商后推送通知
+  notifyOnAutoSwitch?: boolean;
 }
 
 export interface SessionMeta {

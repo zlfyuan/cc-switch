@@ -34,6 +34,9 @@ impl FailoverSwitchManager {
     ///
     /// 如果相同的切换已在进行中，则跳过；否则执行切换逻辑。
     ///
+    /// `source` 标识切换来源：`"circuit_breaker"`（健康检查失败）或
+    /// `"quota"`（配额耗尽）。当前仅 `"quota"` 路径会触发系统通知。
+    ///
     /// # Returns
     /// - `Ok(true)` - 切换成功执行
     /// - `Ok(false)` - 切换已在进行中，跳过
@@ -44,6 +47,7 @@ impl FailoverSwitchManager {
         app_type: &str,
         provider_id: &str,
         provider_name: &str,
+        source: &str,
     ) -> Result<bool, AppError> {
         let switch_key = format!("{app_type}:{provider_id}");
 
@@ -59,7 +63,7 @@ impl FailoverSwitchManager {
 
         // 执行切换（确保最后清理 pending 标记）
         let result = self
-            .do_switch(app_handle, app_type, provider_id, provider_name)
+            .do_switch(app_handle, app_type, provider_id, provider_name, source)
             .await;
 
         // 清理 pending 标记
@@ -77,6 +81,7 @@ impl FailoverSwitchManager {
         app_type: &str,
         provider_id: &str,
         provider_name: &str,
+        source: &str,
     ) -> Result<bool, AppError> {
         // 检查该应用是否已被代理接管（enabled=true）
         // 只有被接管的应用才允许执行故障转移切换
@@ -93,7 +98,7 @@ impl FailoverSwitchManager {
             return Ok(false);
         }
 
-        log::info!("[FO-001] 切换: {app_type} → {provider_name}");
+        log::info!("[FO-001] 切换: {app_type} → {provider_name} ({source})");
 
         let mut switched = false;
 
@@ -123,10 +128,15 @@ impl FailoverSwitchManager {
             let event_data = serde_json::json!({
                 "appType": app_type,
                 "providerId": provider_id,
-                "source": "failover"  // 标识来源是故障转移
+                "source": source
             });
             if let Err(e) = app.emit("provider-switched", event_data) {
                 log::error!("[Failover] 发射事件失败: {e}");
+            }
+
+            // 配额耗尽导致的自动切换 → 推送系统通知
+            if source == "quota" {
+                crate::notification::notify_auto_switched(provider_name, "failover provider");
             }
         }
 

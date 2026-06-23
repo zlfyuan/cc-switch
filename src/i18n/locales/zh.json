@@ -265,7 +265,10 @@
     "backfillWarning": "切换成功，但旧供应商配置回填失败，您手动修改的配置可能未保存",
     "windowControlFailed": "窗口控制失败：{{error}}",
     "officialBlockedByProxy": "本地路由模式下不能切换到官方供应商，使用路由访问官方 API 可能导致账号被封禁",
-    "proxyOfficialWarning": "当前供应商 {{name}} 是官方供应商，建议切换到第三方供应商后再使用本地路由"
+    "proxyOfficialWarning": "当前供应商 {{name}} 是官方供应商，建议切换到第三方供应商后再使用本地路由",
+    "permissionGranted": "通知权限已授予",
+    "permissionDenied": "通知权限被拒绝。请在系统设置中手动开启 CC Switch 的通知权限。",
+    "permissionPrompted": "请求通知权限失败: {{error}}"
   },
   "confirm": {
     "deleteProvider": "删除供应商",
@@ -869,7 +872,24 @@
       "defaultCostMultiplierRequired": "默认倍率不能为空",
       "defaultCostMultiplierInvalid": "默认倍率格式不正确"
     },
-    "saveFailedGeneric": "保存失败，请重试"
+    "saveFailedGeneric": "保存失败，请重试",
+    "notifications": {
+      "title": "通知",
+      "enableNotifications": "启用桌面通知",
+      "enableNotificationsDescription": "在系统通知中心显示配额提醒和重置提醒。需要授予系统通知权限。",
+      "notifyOnThresholdReached": "配额阈值告警",
+      "notifyOnThresholdReachedDescription": "使用率跨过 80% / 95% / 100% 时通知（每天每个阈值最多一次）",
+      "notifyOnResetApproaching": "重置提醒",
+      "notifyOnResetApproachingDescription": "配额重置前 5 分钟 + 重置瞬间各推送一条提醒",
+      "notifyOnAutoSwitch": "自动切换提醒",
+      "notifyOnAutoSwitchDescription": "配额耗尽自动切换到备用供应商时通知（仅在启用自动故障转移时有效）",
+      "testButton": "发送测试通知",
+      "testTitle": "CC Switch 测试通知",
+      "testBody": "如果你看到这条消息，OS 通知已正常工作。",
+      "testSuccess": "测试通知已发送",
+      "testFailed": "发送失败: {{error}}",
+      "permissionWarning": "系统通知权限未授予。请在系统设置 → 通知 → CC Switch 中开启。"
+    }
   },
   "apps": {
     "claude": "Claude",

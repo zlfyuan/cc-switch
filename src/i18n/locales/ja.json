@@ -265,7 +265,10 @@
     "backfillWarning": "切り替え成功しましたが、前のプロバイダーへの設定保存に失敗しました",
     "windowControlFailed": "ウィンドウ操作に失敗しました: {{error}}",
     "officialBlockedByProxy": "ローカルルーティングモード中は公式プロバイダーに切り替えできません。ルーティング経由で公式 API にアクセスするとアカウントが停止される可能性があります。",
-    "proxyOfficialWarning": "現在のプロバイダー {{name}} は公式です。ローカルルーティングを使用する前にサードパーティプロバイダーに切り替えてください。"
+    "proxyOfficialWarning": "現在のプロバイダー {{name}} は公式です。ローカルルーティングを使用する前にサードパーティプロバイダーに切り替えてください。",
+    "permissionGranted": "通知権限が付与されました",
+    "permissionDenied": "通知権限が拒否されました。システム設定で CC Switch の通知を手動で有効にしてください。",
+    "permissionPrompted": "通知権限のリクエストに失敗しました: {{error}}"
   },
   "confirm": {
     "deleteProvider": "プロバイダーを削除",
@@ -869,7 +872,24 @@
       "defaultCostMultiplierRequired": "デフォルト倍率は必須です",
       "defaultCostMultiplierInvalid": "デフォルト倍率の形式が正しくありません"
     },
-    "saveFailedGeneric": "保存に失敗しました。もう一度お試しください"
+    "saveFailedGeneric": "保存に失敗しました。もう一度お試しください",
+    "notifications": {
+      "title": "通知",
+      "enableNotifications": "デスクトップ通知を有効化",
+      "enableNotificationsDescription": "システム通知センターにクォータ警告とリセット通知を表示します。OS レベルの通知権限が必要です。",
+      "notifyOnThresholdReached": "クォータ閾値アラート",
+      "notifyOnThresholdReachedDescription": "使用率が 80% / 95% / 100% を超えたときに通知（各閾値 1 日 1 回まで）",
+      "notifyOnResetApproaching": "リセット通知",
+      "notifyOnResetApproachingDescription": "リセット 5 分前とリセット時点の 2 回通知",
+      "notifyOnAutoSwitch": "自動切替通知",
+      "notifyOnAutoSwitchDescription": "クォータ枯渇による自動フェイルオーバー時に通知（自動フェイルオーバー有効時のみ）",
+      "testButton": "テスト通知を送信",
+      "testTitle": "CC Switch テスト通知",
+      "testBody": "このメッセージが表示されていれば、OS 通知は正常に動作しています。",
+      "testSuccess": "テスト通知を送信しました",
+      "testFailed": "送信失敗: {{error}}",
+      "permissionWarning": "システム通知権限が付与されていません。システム設定 → 通知 → CC Switch で有効化してください。"
+    }
   },
   "apps": {
     "claude": "Claude",

@@ -501,7 +501,7 @@ impl RequestForwarder {
                             let at = app_type_str.to_string();
 
                             tokio::spawn(async move {
-                                let _ = fm.try_switch(ah.as_ref(), &at, &pid, &pname).await;
+                                let _ = fm.try_switch(ah.as_ref(), &at, &pid, &pname, "circuit_breaker").await;
                             });
                         }
                         // 重新计算成功率
@@ -604,7 +604,7 @@ impl RequestForwarder {
 
                                             tokio::spawn(async move {
                                                 let _ = fm
-                                                    .try_switch(ah.as_ref(), &at, &pid, &pname)
+                                                    .try_switch(ah.as_ref(), &at, &pid, &pname, "circuit_breaker")
                                                     .await;
                                             });
                                         }
@@ -752,7 +752,7 @@ impl RequestForwarder {
 
                                                 tokio::spawn(async move {
                                                     let _ = fm
-                                                        .try_switch(ah.as_ref(), &at, &pid, &pname)
+                                                        .try_switch(ah.as_ref(), &at, &pid, &pname, "circuit_breaker")
                                                         .await;
                                                 });
                                             }
@@ -913,7 +913,7 @@ impl RequestForwarder {
                                             let at = app_type_str.to_string();
                                             tokio::spawn(async move {
                                                 let _ = fm
-                                                    .try_switch(ah.as_ref(), &at, &pid, &pname)
+                                                    .try_switch(ah.as_ref(), &at, &pid, &pname, "circuit_breaker")
                                                     .await;
                                             });
                                         }

@@ -36,6 +36,9 @@ mod tray;
 mod usage_events;
 mod usage_script;
 
+mod i18n;
+mod notification;
+
 pub use app_config::{AppType, InstalledSkill, McpApps, McpServer, MultiAppConfig, SkillApps};
 pub use codex_config::{get_codex_auth_path, get_codex_config_path, write_codex_live_atomic};
 pub use commands::open_provider_terminal;
@@ -292,6 +295,7 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(
             tauri_plugin_window_state::Builder::default()
@@ -359,6 +363,7 @@ pub fn run() {
             // 也能向前端推送 `usage-log-recorded`。
             // 放在日志系统初始化之后，确保 init 的日志能正常输出。
             usage_events::init(app.handle().clone());
+            notification::init(app.handle().clone());
 
             // 初始化数据库
             let app_config_dir = crate::config::get_app_config_dir();
@@ -909,6 +914,13 @@ pub fn run() {
             // 将同一个实例注入到全局状态，避免重复创建导致的不一致
             app.manage(app_state);
 
+            // 注入 NotificationState：dedup + 调度任务管理。
+            // 必须在 AppState 之后（依赖 db.clone()），在 bootstrap 之前。
+            {
+                let db = app.state::<AppState>().db.clone();
+                app.manage(notification::NotificationState::new(db));
+            }
+
             // 从数据库加载日志配置并应用
             {
                 let db = &app.state::<AppState>().db;
@@ -985,6 +997,9 @@ pub fn run() {
             let app_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 let state = app_handle.state::<AppState>();
+
+                // 启动期重建通知调度：从 SQLite 恢复未触发的重置提醒任务。
+                notification::bootstrap(app_handle.state::<notification::NotificationState>()).await;
 
                 // 检查是否有 Live 备份（表示上次异常退出时可能处于接管状态）
                 let has_backups = match state.db.has_any_live_backup().await {
@@ -1187,6 +1202,10 @@ pub fn run() {
             commands::set_log_config,
             commands::restart_app,
             commands::install_update_and_restart,
+            commands::is_notification_permission_granted,
+            commands::request_notification_permission,
+            commands::test_notification,
+            commands::notification_settings_changed,
             commands::check_for_updates,
             commands::is_portable_mode,
             commands::copy_text_to_clipboard,

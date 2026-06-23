@@ -478,6 +478,20 @@ pub struct AppSettings {
     // ===== 本机自动迁移状态 =====
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub local_migrations: Option<LocalMigrations>,
+
+    // ===== 通知设置 =====
+    /// 是否启用 OS 级桌面通知（Notification Center / Action Center / libnotify）。
+    #[serde(default)]
+    pub enable_notifications: bool,
+    /// 配额使用率跨过 80/95/100 阈值时推送通知。
+    #[serde(default = "default_true")]
+    pub notify_on_threshold_reached: bool,
+    /// 配额重置前 5 分钟 + 整点各推一条提醒。
+    #[serde(default = "default_true")]
+    pub notify_on_reset_approaching: bool,
+    /// 自动故障转移切换供应商后推送通知。
+    #[serde(default = "default_true")]
+    pub notify_on_auto_switch: bool,
 }
 
 fn default_show_in_tray() -> bool {
@@ -533,6 +547,10 @@ impl Default for AppSettings {
             backup_retain_count: None,
             preferred_terminal: None,
             local_migrations: None,
+            enable_notifications: false,
+            notify_on_threshold_reached: true,
+            notify_on_reset_approaching: true,
+            notify_on_auto_switch: true,
         }
     }
 }
